@@ -35,12 +35,14 @@ def normalize_date(in_date: str) -> str:
 
 
 def normalize_phone(in_phone: str) -> str:
+    output = np.nan
     if is_not_null(in_phone):
         digits = re.sub(r"\D", "", in_phone)
         if len(digits) != 10:
-            raise ValueError("Not a valid 10-digit US phone number")
-        return f"{digits[:3]}-{digits[3:6]}-{digits[6:]}"
-    return np.nan
+            print(f'Not standard phone number: {in_phone}')
+        else:
+            output = f"{digits[:3]}-{digits[3:6]}-{digits[6:]}"
+    return output
 
 
 def normalize_value(in_type: str, in_value) -> str:
