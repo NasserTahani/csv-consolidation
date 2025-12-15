@@ -39,11 +39,6 @@
       "name": "company",
       "type": "string",
       "values": ["company"]
-    },
-    {
-      "name": "country",
-      "type": "string",
-      "values": ["country"]
     }
   ]
 }

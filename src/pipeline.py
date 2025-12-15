@@ -68,8 +68,10 @@ def normalize_files(in_dir: str, schema_mapping: str):
 
         new_columns = []
         for fld in df_columns:
+            new_columns.append(fld)
             for sch_fld in schema_columns:
                 if fld in sch_fld['values']:
+                    new_columns.pop()
                     new_columns.append(sch_fld['name'])
                     df[fld] = df[fld].apply(lambda x: normalize_value(sch_fld['type'], x))
                     break
@@ -91,8 +93,7 @@ def merge_dataFrames(df_list, out_parquet):
                 res_df = pd.merge(res_df, df_list[i + 1], on=['name'], how='outer')
     print(res_df)
 
-    res_df.to_parquet(out_parquet, index=False, engine='pyarrow')
-
+    # res_df.to_parquet(out_parquet, engine='pyarrow', index=False)
 
 
 df_list = normalize_files(r'../data_raw', r'../config/schema_mapping.json')
