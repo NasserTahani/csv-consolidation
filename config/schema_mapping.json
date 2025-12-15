@@ -1,0 +1,49 @@
+{
+  "columns": [
+    {
+      "name": "id",
+      "type": "number",
+      "values": ["id"]
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "values": ["Name", "full_name", "name"]
+    },
+    {
+      "name": "date_of_birth",
+      "type": "date",
+      "values": ["dob"]
+    },
+    {
+      "name": "email",
+      "type": "email",
+      "values": ["Email"]
+    },
+    {
+      "name": "phone",
+      "type": "phone",
+      "values": ["phone_number"]
+    },
+    {
+      "name": "address",
+      "type": "string",
+      "values": ["address"]
+    },
+    {
+      "name": "created_date",
+      "type": "date",
+      "values": ["Created_Date", "signup_date"]
+    },
+    {
+      "name": "company",
+      "type": "string",
+      "values": ["company"]
+    },
+    {
+      "name": "country",
+      "type": "string",
+      "values": ["country"]
+    }
+  ]
+}
