@@ -1,15 +1,47 @@
-## CSV Normalization & Staging Pipeline (Parquet Output)
+# End-to-end Data Ingestion Pipeline 
+#### CSV → Parquet → Cloud Storage → Snowflake (Staging Layer)
 ### Project Overview
-This project implements a schema-driven data ingestion and normalization pipeline that consolidates multiple heterogeneous CSV files into a single, clean parquet staging dataset. 
-The pipeline simulates a real-world staging (Silver) layer in a data engineering architecture, where raw source data is standardized and prepared for downstream processing such as deduplication, analytics, or warehouse loading.
+This project implements an end-to-end data ingestion pipeline that takes heterogeneous raw CSV files and delivers a clean, typed Snowflake staging table, ready for downstream analytics or transformation.
 
-### Objectives
-- Ingest multiple CSV files with different schemas
-- Normalize column names and data formats using a configurable schema mapping
-- Apply consistent data-cleaning rules across all sources
-- Preserve all records without premature deduplication
-- Track data lineage at the row level
-- Output a single, columnar Parquet dataset
+### High Level Architecture 
+    Raw CSV Files
+          ↓
+    Schema-Driven Normalization (Python)
+          ↓
+    Parquet (Staging Files)
+          ↓
+    Azure Blob Storage
+          ↓
+    Snowflake External Stage
+          ↓
+    Snowflake Staging Table
+
+### Project Structure
+    project/
+    ├── data_raw/
+    │   └── source_*.csv
+    ├── data_processed/
+    │   └── output.parquet
+    ├── src/
+    │   ├── csv_normalization.py
+    │   ├── snowflake_loader.py
+    │   └── utils/
+    ├── config/
+    │   ├── schema_mapping.json
+    │   └── config.toml
+    └── README.md
+
+### Processing Flow
+1. Read raw CSV files
+2. Normalize schema and values
+3. Write normalized Parquet
+4. Upload Parquet to Azure Blob Storage
+5. Infer Snowflake table schema from Parquet
+6. Load data incrementally using COPY INTO
+
+
+## Phase 1 — CSV Normalization & Parquet Staging
+Convert heterogeneous CSV inputs into a consistent, analytics-ready dataset while preserving all source records. (No deduplication)
 
 ### Input Data
 The pipeline ingests multiple CSV files located in a configurable directory.
@@ -19,20 +51,6 @@ Characteristics of input data:
 - Partial overlap of information across files
 - Inconsistent formatting (dates, emails, phone numbers)
 - Missing or null values
-
-### Project Structure
-    project/
-    ├── data_raw/
-    │   ├── source_a.csv
-    │   ├── source_b.csv
-    │   └── source_c.csv
-    ├── data_processed/
-    │   └── output.parquet
-    ├── config/
-    │   └── schema_mapping.json
-    ├── src/
-    │   └── pipeline.py
-    └── README.md
 
 ### Schema Mapping
 Schema normalization is driven by an external JSON configuration file:
@@ -57,20 +75,25 @@ To support traceability and debugging, the pipeline adds:
 - source_file — name of the originating CSV
 - row_id — source-specific row identifier using UUID
 
-### Processing Flow
-1. Discover all CSV files in the input directory
-2. Apply schema-driven column normalization
-3. Normalize values by declared data type
-4. Add lineage metadata
-5. Concatenate all normalized records into a single dataset
-6. Write output as a Parquet file using PyArrow
-
 ### Output
 The final output is a single Parquet file containing all normalized records.
 
 ### How to Run
     python src/pipeline.py
 
+## Phase 2 — Cloud Storage & Snowflake Ingestion
+Load normalized Parquet data into Snowflake using a cloud-native ingestion pattern.
 
-`
+### Schema Handling Strategy
+- Table schema is inferred once from Parquet metadata
+- Avoids duplicating schema definitions in code
+- Keeps staging tables aligned with upstream data
+- Parquet fields are mapped to table columns using MATCH_BY_COLUMN_NAME
+- Produces typed, columnar Snowflake tables
 
+### Output
+The final output is a single Parquet file containing all normalized records.
+
+### How to Run
+    set config.toml
+    python src/snowflake_loader.py

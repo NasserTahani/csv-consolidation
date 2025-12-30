@@ -46,7 +46,7 @@ class SnowflakeHelper:
     def create_stage(self, stage_name, storage_integration, azure_blob_url, file_format):
         self.execute_query('USE ROLE SYSADMIN;')
         sql = f'''
-            CREATE OR REPLACE STAGE {stage_name}
+            CREATE OR REPLACE TEMPORARY STAGE {stage_name}
             STORAGE_INTEGRATION = {storage_integration}
             URL = "{azure_blob_url}"
             FILE_FORMAT = "{file_format}";
